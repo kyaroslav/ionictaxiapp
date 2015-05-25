@@ -1,0 +1,83 @@
+<ion-view view-title="ЖЕЛТОЕ ТАКСИ" scroll="false">
+  <ion-content scroll="false">
+    <div class="list padding" style="margin-bottom: 0px">
+      <ion-slide-box ng-init="disableSwipe()"
+                     does-continue="false"
+                     auto-play="false"
+                     show-pager="false">
+        <ion-slide>
+          <div class="list">
+            <span class="item item-input">
+              <div class="input-label">
+                Откуда
+              </div>
+              <!--<input type="text" id="from" class="form-control"  ng-autocomplete  options="options" ng-model="address.from" ng-focus="disableTap('from')" placeholder="Выберите адрес"/>-->
+              <ion-autocomplete template-url="templates/searchItem.html" class="form-control" ng-model="address.from" items-method="callbackMethod(query)" cancel-label="Отмена" placeholder="Выберите адрес" ng-focus="disableTap('from')" select-items-label="Выберите адрес..." item-view-value-key="GeoObject.name"/>
+              <i ng-click="centerOnMe()" class="icon ion-navigate padding"></i>
+            </span>
+            <label class="item item-input">
+              <div class="input-label">
+                Куда
+              </div>
+              <!--<input type="text" id="destination" class="form-control"  ng-autocomplete  options="options" ng-model="address.destination" ng-focus="disableTap('destination')" placeholder="Выберите адрес"/>-->
+              <ion-autocomplete template-url="templates/searchItem.html" ng-model="address.destination" items-method="callbackMethod(query)" cancel-label="Отмена" placeholder="Выберите адрес" select-items-label="Выберите адрес..." item-view-value-key="GeoObject.name"/>
+            </label>
+            <button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="nextSlide()">Далее</button>
+          </div>
+        </ion-slide>
+        <ion-slide>
+          <div class="list">
+            <label class="item item-input item-select">
+              <div class="input-label">
+                Когда
+              </div>
+              <select ng-model="address.when">
+                <option>Прямо сейчас</option>
+                <option>На время</option>
+              </select>
+            </label>
+            <label class="item item-input">
+              <div class="input-label">
+                Другое время
+              </div>
+              <input type="datetime-local"  ng-model="address.time">
+            </label>
+            <button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="nextSlide()">Далее</button>
+          </div>
+        </ion-slide>
+        <ion-slide>
+          <div class="list">
+            <label class="item item-input">
+              <div class="input-label">
+                Имя
+              </div>
+              <input type="text" class="form-control"  options="options" ng-model="user.name" placeholder="Введите имя"/>
+            </label>
+            <label class="item item-input">
+              <div class="input-label">
+                Телефон
+              </div>
+
+              <input type="text" input-mask="{mask: '+7(999)999-99-99'}" class="phone form-control" placeholder="" ng-model="user.phone"/>
+              <!--<input type="text" ui-mask="+7(999)999-99-99" class="phone form-control" placeholder=""/>-->
+              <!--<input class="phone" type="text" id="userPhone" input-mask mask="{mask: '+7(999)999-99-99'}" class="form-control" ng-model="user.phone"/>-->
+              <!--<input type="text" id="Creation_Date" name="Creation_Date" maxlength="50" class="form-control" data-ng-model="date" mask data-mask="99/99/9999" />-->
+            </label>
+            <button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="sendEmail(address, user)">Отправить</button>
+          </div>
+        </ion-slide>
+      </ion-slide-box>
+    </div>
+    <pane side-menu-content drag-content="false">
+      <ya-map ya-zoom="{{ymap.zoom}}" class="map" ya-controls="" ya-after-init="afterInit()">
+        <ya-collection>
+          <ya-geo-object ng-repeat="go in geoObjects"
+                         ya-source="go"
+                         ya-options="{preset: 'islands#circleDotIcon',iconColor: 'red'}"
+                         class="geo-object"></ya-geo-object>
+        </ya-collection>
+      </ya-map>
+    </pane>
+  </ion-content>
+
+</ion-view>

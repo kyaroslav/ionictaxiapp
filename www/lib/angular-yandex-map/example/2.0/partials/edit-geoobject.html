@@ -1,0 +1,84 @@
+<div class="center">
+    <p>HTML:</p>
+    <pre class="html" ng-non-bindable>
+&lt;div id="menu" ng-show="show" ng-style="{left:clickCoords[0]+'px',top:clickCoords[1]+'px'}"&gt;
+    &lt;ul id="menu_list"&gt;
+        &lt;li&gt;Название: &lt;br /&gt; &lt;input type="text" name="icon_text" ng-model="params.iconContent"/&gt;&lt;/li&gt;
+        &lt;li&gt;Подсказка: &lt;br /&gt; &lt;input type="text" name="hint_text" ng-model="params.hintContent"/&gt;&lt;/li&gt;
+        &lt;li&gt;Балун: &lt;br /&gt; &lt;input type="text" name="balloon_text" ng-model="params.balloonContent"/&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;div align="center"&gt;&lt;input type="submit" value="Сохранить" ng-click="save()"/&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;ya-map ya-zoom="10" ya-center="[42.162536,47.534306]"&gt;
+    &lt;ya-geo-object ya-source="point" ya-options="{preset: 'twirl#redStretchyIcon'}"
+                   ya-event-contextmenu="contextmenu($event)"
+                   ya-after-init="afterInit($target)"&gt;&lt;/ya-geo-object&gt;
+&lt;/ya-map>
+    </pre>
+    <p>CSS</p>
+    <pre class="css" ng-non-bindable>
+#menu {
+    position: absolute;
+    width: 12em;
+    background: #FFFFCC;
+    border: 3px solid #006600;
+    border-radius: 12px;
+    padding-bottom: 10px;
+    z-index: 2
+}
+#menu ul {
+    list-style-type: none;
+    padding: 20px;
+    margin: 0;
+}
+#menu input {
+    width: 10em;
+}
+    </pre>
+    <p>javascript:</p>
+    <pre class="js" ng-non-bindable>
+var geoObj;
+$scope.afterInit=function(geoObject){
+    geoObj = geoObject;
+    $scope.params ={
+        iconContent:geoObject.properties.get('iconContent'),
+        hintContent:geoObject.properties.get('hintContent'),
+        balloonContent:geoObject.properties.get('balloonContent')
+    };
+};
+$scope.save = function(){
+    $scope.show = false;
+    geoObj.properties.set($scope.params);
+};
+$scope.point = {
+    geometry:{
+        type:'Point',
+        coordinates:[42.10,47.60]
+    },
+    properties:{
+        hintContent: 'Щелкни по мне правой кнопкой мыши!'
+    }
+};
+$scope.contextmenu = function(e){
+    $scope.show = !$scope.show;
+    if($scope.show){
+        $scope.clickCoords = e.get('position');
+    }
+};
+</pre>
+</div>
+<div class="right">
+    <div id="menu" ng-show="show" ng-style="{left:clickCoords[0]+'px',top:clickCoords[1]+'px'}">
+        <ul id="menu_list">
+            <li>Название: <br /> <input type="text" name="icon_text" ng-model="params.iconContent"/></li>
+            <li>Подсказка: <br /> <input type="text" name="hint_text" ng-model="params.hintContent"/></li>
+            <li>Балун: <br /> <input type="text" name="balloon_text" ng-model="params.balloonContent"/></li>
+        </ul>
+        <div align="center"><input type="submit" value="Сохранить" ng-click="save()"/></div>
+    </div>
+    <ya-map ya-zoom="10" ya-center="[42.162536,47.534306]">
+        <ya-geo-object ya-source="point" ya-options="{preset: 'twirl#redStretchyIcon'}"
+                ya-event-contextmenu="contextmenu($event)"
+                ya-after-init="afterInit($target)"></ya-geo-object>
+    </ya-map>
+</div>

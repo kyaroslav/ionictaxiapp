@@ -1,0 +1,76 @@
+<div class="center">
+    <p>HTML:</p>
+    <pre class="html" ng-non-bindable>
+&lt;ya-map ya-zoom="10" ya-center="[37.64,55.76]"&gt;
+    &lt;ya-geo-object ya-source="geoObjects[0]" ya-options="{preset:'twirl#redStretchyIcon',draggable:true}"&gt;&lt;/ya-geo-object&gt;
+    &lt;ya-geo-object ya-source="geoObjects[1]" ya-options="{preset:'twirl#violetIcon'}"&gt;&lt;/ya-geo-object&gt;
+    &lt;ya-geo-object ya-source="geoObjects[2]"
+                   ya-options="{iconImageHref:'img/myIcon.gif',iconImageSize:[30, 42],iconImageOffset: [-3, -42]}"&gt;&lt;/ya-geo-object&gt;
+&lt;/ya-map&gt;
+&lt;button ng-click="changeOne()"&gt;Сменить первый объект&lt;/button&gt;
+&lt;button ng-click="changeCoords()"&gt;Сменить координаты второго объекта&lt;/button&gt;
+    </pre>
+    <p>javascript:</p>
+    <pre class="js" ng-non-bindable>
+$scope.geoObjects=[
+    {
+        geometry: {
+            type: 'Point',
+            coordinates: [37.8,55.8]
+        },
+        properties: {
+            iconContent: 'Метка',
+            balloonContent: 'Меня можно перемещать'
+        }
+    },
+    {
+        geometry: {
+            type: 'Point',
+            coordinates: [37.6,55.8]
+        },
+        properties: {
+            iconContent: '1',
+            balloonContent: 'Балун',
+            hintContent: 'Стандартный значок метки'
+        }
+    },
+    {
+        geometry: {
+            type: 'Point',
+            coordinates: [37.56,55.76]
+        },
+        properties: {
+            hintContent: 'Собственный значок метки'
+        }
+    }
+];
+$scope.changeOne = function(){
+    $scope.geoObjects[0]={
+        // Геометрия = тип объекта + географические координаты объекта
+        geometry: {
+            // Тип геометрии - точка
+            type: 'Point',
+            // Координаты точки.
+            coordinates: [37.7,55.7]
+        },
+        // Свойства
+        properties: {
+            iconContent: 'Метка',
+            balloonContent: 'Меня можно перемещать'
+        }
+    }
+};
+$scope.changeCoords = function(){
+    $scope.geoObjects[1].geometry.coordinates=[37.7,55.9];
+};</pre>
+</div>
+<div class="right">
+    <ya-map ya-zoom="10" ya-center="[37.64,55.76]">
+        <ya-geo-object ya-source="geoObjects[0]" ya-options="{preset:'twirl#redStretchyIcon',draggable:true}"></ya-geo-object>
+        <ya-geo-object ya-source="geoObjects[1]" ya-options="{preset:'twirl#violetIcon'}"></ya-geo-object>
+        <ya-geo-object ya-source="geoObjects[2]"
+                       ya-options="{iconImageHref:'img/myIcon.gif',iconImageSize:[30, 42],iconImageOffset: [-3, -42]}"></ya-geo-object>
+    </ya-map>
+    <button ng-click="changeOne()">Сменить первый объект</button>
+    <button ng-click="changeCoords()">Сменить координаты второго объекта</button>
+</div>
