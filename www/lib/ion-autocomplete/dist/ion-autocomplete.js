@@ -104,6 +104,19 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                     // get the compiled search field
                     var searchInputElement = angular.element(compiledTemplate.element.find('input'));
 
+                    compiledTemplate.scope.createItem = function () {
+                      compiledTemplate.scope.items = [];
+
+                      // set the view value and render it
+                      ngModel.$setViewValue(compiledTemplate.scope.searchQuery);
+                      compiledTemplate.scope.searchQuery = '';
+
+                      ngModel.$render();
+
+                      // hide the container and the ionic backdrop
+                      hideSearchContainer();
+                    }
+
                     // function which selects the item, hides the search container and the ionic backdrop if it is not a multiple select autocomplete
                     compiledTemplate.scope.selectItem = function (item) {
 
@@ -259,6 +272,13 @@ angular.module('ion-autocomplete', []).directive('ionAutocomplete', [
                         compiledTemplate.scope.searchQuery = '';
                         hideSearchContainer();
                     });
+
+                    //compiledTemplate.element.find('span').bind('click', function (event) {
+                    //  // set the view value and render it
+                    //  ngModel.$setViewValue('test');
+                    //  ngModel.$render();
+                    //  hideSearchContainer();
+                    //});
 
                 });
 

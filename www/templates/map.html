@@ -1,6 +1,7 @@
 <ion-view view-title="ЖЕЛТОЕ ТАКСИ" scroll="false">
   <ion-content scroll="false">
     <div class="list padding" style="margin-bottom: 0px">
+      <form name="userForm" novalidate  autocomplete="off">
       <ion-slide-box ng-init="disableSwipe()"
                      does-continue="false"
                      auto-play="false"
@@ -22,7 +23,10 @@
               <!--<input type="text" id="destination" class="form-control"  ng-autocomplete  options="options" ng-model="address.destination" ng-focus="disableTap('destination')" placeholder="Выберите адрес"/>-->
               <ion-autocomplete template-url="templates/searchItem.html" ng-model="address.destination" items-method="callbackMethod(query)" cancel-label="Отмена" placeholder="Выберите адрес" select-items-label="Выберите адрес..." item-view-value-key="GeoObject.name"/>
             </label>
-            <button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="nextSlide()">Далее</button>
+            <!--<button  class="button button-block button-positive" ></button>-->
+            <div class="button-bar" style="margin-bottom: 0px">
+              <a class="button" ng-click="nextSlide()">Далее</a>
+            </div>
           </div>
         </ion-slide>
         <ion-slide>
@@ -31,18 +35,19 @@
               <div class="input-label">
                 Когда
               </div>
-              <select ng-model="address.when">
-                <option>Прямо сейчас</option>
-                <option>На время</option>
-              </select>
+              <select ng-model="address.when" ng-options="time.name for time in times"  ng-change="updateTime(address.when.id)"></select>
             </label>
             <label class="item item-input">
               <div class="input-label">
                 Другое время
               </div>
-              <input type="datetime-local"  ng-model="address.time">
+              <input type="datetime-local" placeholder="yyyy-MM-ddTHH:mm:ss" min="{{currentTime}}"  ng-show="!address.timeIsDisabled" ng-readonly="address.timeIsDisabled" name="address_time" ng-model="address.time" ng-required="!address.timeIsDisabled">
             </label>
-            <button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="nextSlide()">Далее</button>
+            <!--<button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="nextSlide()">Далее</button>-->
+            <div class="button-bar" style="margin-bottom: 0px">
+              <a class="button" ng-click="prevSlide()">Назад</a>
+              <a class="button" ng-click="nextSlide()" ng-disabled="userForm.address_time.$invalid">Далее</a>
+            </div>
           </div>
         </ion-slide>
         <ion-slide>
@@ -51,22 +56,27 @@
               <div class="input-label">
                 Имя
               </div>
-              <input type="text" class="form-control"  options="options" ng-model="user.name" placeholder="Введите имя"/>
+              <input type="text" class="form-control" required="required"  options="options" ng-model="user.name" placeholder="Введите имя"/>
             </label>
             <label class="item item-input">
               <div class="input-label">
                 Телефон
               </div>
 
-              <input type="text" input-mask="{mask: '+7(999)999-99-99'}" class="phone form-control" placeholder="" ng-model="user.phone"/>
+              <input type="text" required="required" input-mask="{mask: '+7(999)999-99-99'}" class="phone form-control" placeholder="" ng-model="user.phone"/>
               <!--<input type="text" ui-mask="+7(999)999-99-99" class="phone form-control" placeholder=""/>-->
               <!--<input class="phone" type="text" id="userPhone" input-mask mask="{mask: '+7(999)999-99-99'}" class="form-control" ng-model="user.phone"/>-->
               <!--<input type="text" id="Creation_Date" name="Creation_Date" maxlength="50" class="form-control" data-ng-model="date" mask data-mask="99/99/9999" />-->
             </label>
-            <button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="sendEmail(address, user)">Отправить</button>
+            <!--<button style="margin-bottom: 0px" class="button button-block button-positive" ng-click="sendEmail(address, user)">Отправить</button>-->
+            <div class="button-bar" style="margin-bottom: 0px">
+              <a class="button" ng-click="prevSlide()">Назад</a>
+              <a class="button" ng-click="sendEmail(address, user)" ng-disabled="userForm.$invalid">Отправить</a>
+            </div>
           </div>
         </ion-slide>
       </ion-slide-box>
+      </form>
     </div>
     <pane side-menu-content drag-content="false">
       <ya-map ya-zoom="{{ymap.zoom}}" class="map" ya-controls="" ya-after-init="afterInit()">

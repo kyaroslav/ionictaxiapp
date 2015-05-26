@@ -10,6 +10,10 @@ angular.module('starter.controllers', ['starter.directives', 'starter.services',
         $ionicSlideBoxDelegate.slide(0);
       }
 
+      $scope.prevSlide = function() {
+        $ionicSlideBoxDelegate.previous();
+      }
+
       $scope.nextSlide = function() {
         $ionicSlideBoxDelegate.next();
       }
@@ -21,19 +25,46 @@ angular.module('starter.controllers', ['starter.directives', 'starter.services',
         });
         $state.go('app.map');
       }
+
 })
 
 .controller('MapCtrl', function($scope, $ionicLoading, $http , Settings, $q, $rootScope) {
+  $scope.times = [{id: 1, name:'Прямо сейчас'},{id: 2, name:'На время'}];
   $scope.address = {};
   $scope.address.from = '';
   $scope.address.destination = '';
-  $scope.address.when = 'Прямо сейчас';
+  $scope.address.when = $scope.times[0];
   $scope.address.time = '';
+  $scope.address.timeIsDisabled = true;
   $scope.markers = [];
 
   $scope.user = {};
   $scope.user.name = Settings.getUsername();
   $scope.user.phone = Settings.getPhonenumber();
+
+  $scope.updateTime = function(val) {
+    $scope.address.timeIsDisabled = (val == 1) ? true : false;
+  }
+
+      Number.prototype.padLeft = function(base,chr){
+        var  len = (String(base || 10).length - String(this).length)+1;
+        return len > 0? new Array(len).join(chr || '0')+this : this;
+      }
+
+
+
+      var d = new Date(); //MM/dd/yyyy HH:mm   yyyy-MM-ddTHH:mm:ss
+      var dformat = [
+            d.getFullYear(),
+            (d.getMonth()+1).padLeft(),
+            d.getDate().padLeft()
+        ].join('-')+
+      'T' +
+      [ d.getHours().padLeft(),
+        d.getMinutes().padLeft(),
+        d.getSeconds().padLeft()].join(':');
+
+      $scope.currentTime = dformat;//d.toDateString() + " " + d.toTimeString()
 
   //настройки положения карты
   $scope.ymap = {
@@ -45,34 +76,35 @@ angular.module('starter.controllers', ['starter.directives', 'starter.services',
   };
 
   $scope.afterInit = function(){
-    var geolocation = ymaps.geolocation;
-
     $ionicLoading.show({
       content: 'Поиск текущего местоположения...',
       showBackdrop: false
     });
 
-    geolocation.get({
-      provider: 'browser',
-      mapStateAutoApply: true
-    }).then(function (result) {
-      //console.log(result.geoObjects.get(0).properties.get('metaDataProperty'));
-      //console.log(result.geoObjects.get(0).properties.get('metaDataProperty').getAll());
-      $scope.geoObjects.push({
-        geometry:{
-          type:'Point',
-          coordinates:result.geoObjects.position
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+          $scope.ymap.center = [position.coords.longitude, position.coords.latitude];;
+          $scope.geoObjects.push({
+            geometry:{
+              type:'Point',
+              coordinates: $scope.ymap.center
+            }
+          });
+
+          $rootScope.yamap.setCenter($scope.ymap.center);
+          $ionicLoading.hide();
+          $scope.$digest();
+          $scope.findAddress();
+        },
+        function(error){
+          $ionicLoading.hide();
+          alert(error.message);
+        }, {
+          enableHighAccuracy: true
+          ,timeout : 5000
         }
-      });
+    );
 
-      $scope.ymap.center = result.geoObjects.position;
-      $rootScope.yamap.setCenter(result.geoObjects.position);
-      $ionicLoading.hide();
-
-      $scope.$digest();
-
-      $scope.findAddress();
-    });
   };
 
   $scope.updateControls = function(address) {
@@ -170,12 +202,15 @@ angular.module('starter.controllers', ['starter.directives', 'starter.services',
   };
 
   $scope.callbackMethod = function(query) {
+    var d = $q.defer();
+
     var center = $scope.ymap.center;
     var url = 'http://geocode-maps.yandex.ru/1.x/?format=json&kind=house&ll='+center.join(',')+'&spn=0.552069,0.400552&format=json&results=5&lang=ru_RU&geocode=' + query;
-    var d = $q.defer();
+
     $http.get(url).success(function(data){
       d.resolve(data.response.GeoObjectCollection.featureMember);
     });
+
     return d.promise;
   };
 
